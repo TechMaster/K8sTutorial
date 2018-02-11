@@ -217,15 +217,56 @@ kubernetes     ClusterIP      10.96.0.1        <none>        443/TCP        4d
 my-nginx-svc   LoadBalancer   10.105.132.254   <pending>     80:32496/TCP   2d
 ```
 Không thể ping địa chỉ Cluster-IP, 10.105.132.254 của my-nginx-svc, do đó ta cần vào một pod trong cluster
-thì mới truy cập được service này
+thì mới truy cập được service này. Chú ý truy cập ở cổng 80
 ```
 $ kubectl exec my-nginx-b477df957-25wcp -it /bin/sh
 $ wget -qO- http://10.105.132.254
 ```
-## 9.2 port forwarding để nối vào một pod cụ thể trong cluster
+
+## 9.2 Kết nối qua Node Port
+Ở trường hợp này, chúng ta không cần vào trong pod mà ở ngoài Mac, tuy nhiên cổng truy cập sẽ không phải là 80 mà 32496
+```
+$ mk service my-nginx-svc --url
+http://192.168.99.100:32496
+
+$ curl http://192.168.99.100:32496
+```
+## 9.3 port forwarding để nối vào một pod cụ thể trong cluster
 1. Lấy tên các pod trong cluster
 2. Chọn ra một pod để forward cổng từ host vào cổng container trong pod đó phục vụ 
 ```
 $ kubectl get pod
 $ sudo kubectl port-forward myweb-5487d54c5-2g2p7 80:80
+```
+
+# Bài 10: Tạo ingress controller
+[Kubernetes Webinar Series - Everything About Ingress](https://www.youtube.com/watch?v=HwogE64wjmw)
+```
+$ kubectl create -f ingress.yaml
+ingress "ingress-nginx" created
+
+$ kubectl get ing
+NAME            HOSTS     ADDRESS          PORTS     AGE
+ingress-nginx   *         192.168.99.100   80        12s
+
+$ curl http://192.168.99.100
+```
+
+Tìm hiểu thêm về ingress controller
+```
+$ kubectl describe ing ingress-nginx
+Name:             ingress-nginx
+Namespace:        default
+Address:          192.168.99.100
+Default backend:  my-nginx-svc:80 (172.17.0.3:80,172.17.0.4:80,172.17.0.5:80)
+Rules:
+  Host  Path  Backends
+  ----  ----  --------
+  *     *     my-nginx-svc:80 (172.17.0.3:80,172.17.0.4:80,172.17.0.5:80)
+Annotations:
+Events:
+  Type    Reason  Age   From                      Message
+  ----    ------  ----  ----                      -------
+  Normal  CREATE  6m    nginx-ingress-controller  Ingress default/ingress-nginx
+  Normal  UPDATE  5m    nginx-ingress-controller  Ingress default/ingress-nginx
 ```
