@@ -1,5 +1,5 @@
 
-# Bai : Cài đặt minikube
+# Bai 1 : Cài đặt minikube
 minikube tạo ra local cluster
 ## Cài đặt minikube trên MacOSX
 ## Cài đặt minikube trên Linux Ubuntu
@@ -8,7 +8,7 @@ minikube tạo ra local cluster
 
 ## Xử lý lỗi khi khởi động minikube
 
-# Bài 0: Khởi động minikube
+# Bài 2: Khởi động minikube
 $ minikube start --vm-driver=virtualbox
 Starting local Kubernetes v1.9.0 cluster...
 Starting VM...
@@ -26,18 +26,18 @@ minikube version: v0.25.0
 
 $ minikube dashboard
 
-# Bài: Chạy alpine ở chế độ interactive terminal
+# Bài 3: Chạy alpine ở chế độ interactive terminal
 ```
 $ kubectl run alpine --image=alpine:latest --restart=Never -it
 $ kubectl run busybox --image=busybox --restart=Never -it
 ```
 
-# Bài 1: Ứng dụng helloworld
+# Bài 4: Ứng dụng helloworld
 Ứng dụng này in ra dòng chữ Hello Kubernetes! sau đó dọn dẹp, xoá deployment và service vừa tạo ra
 ```
 $ ./helloworld.sh
 ```
-# Bài 2: Chạy load balancer service nối vào 2 Nginx replica
+# Bài 5: Chạy load balancer service nối vào 2 Nginx replica
 ```
 $ ./nginx.sh
 ```
@@ -45,7 +45,7 @@ Chú ý lệnh sẽ lấy địa chỉ truy cập vào service
 ```
 $ minikube service nginxbalancer --url
 ```
-# Bài 3: Tạo một pod đơn giản
+# Bài 6: Tạo một pod đơn giản
 Định nghĩa pod-nginx.yaml như sau
 ```
 apiVersion: v1
@@ -63,7 +63,7 @@ Tạo pod nginx
 ```
 $ kubectl create -f pod-nginx.yaml
 ```
-## Lấy địa chỉ IP của pod
+## 6.1 Lấy địa chỉ IP của pod
 Lấy danh sách chi tiết các pod
 ```
 $ kubectl get pod -o wide
@@ -94,18 +94,18 @@ u@busybox$ wget -qO- http://$POD_IP # Run in the busybox container
 u@busybox$ exit # Exit the busybox container
 $ kubectl delete pod busybox # Clean up the pod we created with "kubectl run"
 ```
-## Kết nối vào pod đang chạy
+# Bài 7: Kết nối vào pod đang chạy
 Kết nối vào trong pod nginx thông qua terminal. Nếu pod có nhiều hơn một container, cần bổ xung option -c
 Lệnh này giống với docker exec
 ```
-kubectl exec nginx -c nginx -i -t -- sh
+kubectl exec nginx -c nginx -it -- sh
 ```
-# Xoá nhiều deployment cùng một lúc
+## Xoá nhiều deployment cùng một lúc
 ```
 kubectl delete deployment nginx webby my-nginx
 ```
 
-# Bài 4: Sử dụng Replication Controller
+# Bài 8: Sử dụng Replication Controller
 Replication Controller dùng để vận hành nhóm các Pod chạy trong thời gian dài. Nếu RC phát hiện Pod nào bị lỗi, bị tắt, dừng, RC sẽ tạo ra Pod mới thay thế.
 
 [rc_caddy.yaml](rc_caddy.yaml)
@@ -164,7 +164,7 @@ $ kubectl get rc
 No resources found.
 ```
 
-# Bài 5: Deployment - Service 
+# Bài 9: Deployment - Service 
 [nginx-app.yaml](nginx-app.yaml) là file định nghĩa service và deployment tương tự như docker-compose.yml
 
 Hiểu rõ hơn về deployment xem ở đây:
@@ -194,7 +194,9 @@ http://192.168.99.100:32496
 $ curl http://192.168.99.100:32496
 $ curl (minikube service my-nginx-svc --url)
 ```
+
 ## Nối vào một pod
+Lệnh này tương đối giống ```docker exec container_name -it /bin/sh```
 ```
 $ kubectl get pod
 NAME                       READY     STATUS    RESTARTS   AGE
@@ -202,11 +204,25 @@ my-nginx-b477df957-25wcp   1/1       Running   1          11h
 my-nginx-b477df957-6wn7f   1/1       Running   1          11h
 my-nginx-b477df957-rsj8n   1/1       Running   1          11h
 
-$ kubectl exec my-nginx-b477df957-25wcp -it /bin/sh
+$ kubectl exec my-nginx-b477df957-25wcp -it /bin/sh  
 / # uname -a
 Linux my-nginx-b477df957-25wcp 4.9.64 #1...
 ```
-## Bài port forwarding để nối vào một pod cụ thể trong cluster
+
+## 9.1: Kết nối vào service cluster IP
+```
+$ kubectl get service
+NAME           TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+kubernetes     ClusterIP      10.96.0.1        <none>        443/TCP        4d
+my-nginx-svc   LoadBalancer   10.105.132.254   <pending>     80:32496/TCP   2d
+```
+Không thể ping địa chỉ Cluster-IP, 10.105.132.254 của my-nginx-svc, do đó ta cần vào một pod trong cluster
+thì mới truy cập được service này
+```
+$ kubectl exec my-nginx-b477df957-25wcp -it /bin/sh
+$ wget -qO- http://10.105.132.254
+```
+## 9.2 port forwarding để nối vào một pod cụ thể trong cluster
 1. Lấy tên các pod trong cluster
 2. Chọn ra một pod để forward cổng từ host vào cổng container trong pod đó phục vụ 
 ```
