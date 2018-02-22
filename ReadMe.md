@@ -270,3 +270,33 @@ Events:
   Normal  CREATE  6m    nginx-ingress-controller  Ingress default/ingress-nginx
   Normal  UPDATE  5m    nginx-ingress-controller  Ingress default/ingress-nginx
 ```
+
+# Bài 11: Trao đổi giữa hai container trong cùng 1 pod thông qua Shared Volume
+[Communicate Between Containers in the Same Pod Using a Shared Volume](https://kubernetes.io/docs/tasks/access-application-cluster/communicate-containers-same-pod-shared-volume/)
+
+Tham khảo file [two-container-pod.yaml](two-container-pod.yaml)
+```
+$ kubectl create -f two-container-pod.yaml
+pod "two-containers" created
+
+$ kubectl exec -it two-containers -c nginx-container -- /bin/sh
+
+/ # hostname
+two-containers
+/ # wget -qO- localhost
+Hello from the debian container
+```
+
+## 11.1 Thực hành nâng cao
+hay thử thay args trong nginx-container
+```
+args: ["-c", "echo Hello from the debian container > /pod-data/index.html"]
+# bằng dòng này
+args: ["-c", "while true; do echo hello >> /pod-data/index.html; sleep 10;done"]
+```
+
+
+# Bài 12: Đóng gói ứng dụng Node.js vào K8s
+[Tham khảo](https://seanmcgary.com/posts/how-to-deploy-a-nodejs-app-to-kubernetes/)
+
+# Bài 13: Convert 

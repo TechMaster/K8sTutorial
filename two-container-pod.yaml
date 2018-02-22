@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: two-containers
+spec:
+  restartPolicy: Always
+
+  volumes:
+  - name: shared-data
+    emptyDir: {}
+
+  containers:
+
+  - name: nginx-container
+    image: nginx:alpine
+    volumeMounts:
+    - name: shared-data
+      mountPath: /usr/share/nginx/html
+
+  - name: alpine-container
+    image: alpine:latest
+    volumeMounts:
+    - name: shared-data
+      mountPath: /pod-data
+    command: ["/bin/sh"]
+    #args: ["-c", "echo Hello from the debian container > /pod-data/index.html"]
+    args: ["-c", "while true; do echo hello >> /pod-data/index.html; sleep 10;done"]
