@@ -299,37 +299,4 @@ args: ["-c", "while true; do echo hello >> /pod-data/index.html; sleep 10;done"]
 # Bài 12: Đóng gói ứng dụng Node.js vào K8s
 [Tham khảo](https://seanmcgary.com/posts/how-to-deploy-a-nodejs-app-to-kubernetes/)
 
-1. Hãy vào thu mục [nodeapp](nodeapp/)
-2. Tạo Node.js app, xem file [nodeapp/index.js](nodeapp/index.js)
-```
-npm init
-yarn add express
-node index.js
-curl http://localhost:3000
-```
-2. Tạo file shell script để tự động hoá việc build docker image và kiểm thử.
-Xem file [nodeapp/build.sh](nodeapp/build.sh)
-
-```
-$ kubectl create -f node_app_service.yaml
-service "node-app-service" created
-
-$ kubectl get service
-NAME               TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
-kubernetes         ClusterIP      10.96.0.1        <none>        443/TCP          16d
-my-nginx-svc       LoadBalancer   10.105.132.254   <pending>     80:32496/TCP     14d
-node-app-service   LoadBalancer   10.105.244.118   <pending>     3000:32282/TCP   8s
-
-$ minikube service node-app-service --url
-http://192.168.99.100:32282
-
-$ curl http://192.168.99.100:32282
-```
-# Bài 13: Convert Docker-Compose sang K8s
-Sử dụng Kompose.io
-
-# Bài 14: Chọn giải pháp phù hợp cài đặt Kubernetes
-[Tài liệu chọn giải pháp cài đặt K8s](https://kubernetes.io/docs/setup/pick-right-solution/)
-# Bài 15: K8s trên Amazon Web ServicesServices
-1. Tạo tài khoản Amazon Web Service. [Link đây](https://portal.aws.amazon.com/billing/signup#/start)
-2. 
+# Bài 13: Convert 
