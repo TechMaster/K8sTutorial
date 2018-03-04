@@ -390,7 +390,13 @@ Cleaning up
     kubectl delete service hello-web
     gcloud compute forwarding-rules list
     gcloud container clusters delete hello-cluster
-    
+
 # Bài 16: K8s trên Amazon Web ServicesServices
 1. Tạo tài khoản Amazon Web Service. [Link đây](https://portal.aws.amazon.com/billing/signup#/start)
 2. 
+
+# Bài 17: Best Practice for Kubernetes
+Sample selection from https://www.youtube.com/watch?v=BznjDNxp4Hs
+
+- Don't trust arbitrary image
+- One process per Container
