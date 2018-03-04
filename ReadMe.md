@@ -333,50 +333,60 @@ $ curl http://192.168.99.100:32282
 
 # Bài 15: Cài đặt K8s trên Google Cloud Platform sử dụng GKE (Google Kubernetes Engine)
 https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app
+
 Commands:
 
 Step 0: Before you begin
-    - gcloud components install kubectl
+    
+    gcloud components install kubectl
 
 Step 1: Build the container image
-    - git clone https://github.com/GoogleCloudPlatform/kubernetes-engine-samples
-    - cd kubernetes-engine-samples/hello-app
-    - export PROJECT_ID="$(gcloud config get-value project -q)"
+    
+    git clone https://github.com/GoogleCloudPlatform/kubernetes-engine-samples
+    cd kubernetes-engine-samples/hello-app
+    export PROJECT_ID="$(gcloud config get-value project -q)"
 
     # Build Docker App and push to a Container Registry
-    - docker build -t gcr.io/${PROJECT_ID}/hello-app:v1 .
+    docker build -t gcr.io/${PROJECT_ID}/hello-app:v1 .
 
     # Check
-    - docker images
+    docker images
 
 Step 2: Upload the container image
-    - gcloud docker -- push gcr.io/${PROJECT_ID}/hello-app:v1
+    
+    gcloud docker -- push gcr.io/${PROJECT_ID}/hello-app:v1
 
 Step 4: Create a container cluster
-    - gcloud container clusters create hello-cluster --num-nodes=3
-    - gcloud compute instances list
+    
+    gcloud container clusters create hello-cluster --num-nodes=3
+    gcloud compute instances list
 
 Step 5: Deploy your application
-    - kubectl run hello-web --image=gcr.io/${PROJECT_ID}/hello-app:v1 --port 8080
-    - kubectl get pods
+    
+    kubectl run hello-web --image=gcr.io/${PROJECT_ID}/hello-app:v1 --port 8080
+    kubectl get pods
 
 Step 6: Expose your application to the Internet
-    - kubectl expose deployment hello-web --type=LoadBalancer --port 80 --target-port 8080
+    
+    kubectl expose deployment hello-web --type=LoadBalancer --port 80 --target-port 8080
 
     # Checking launching service (take awhile to get external IP assigned)
     kubectl get service
 
 Step 7: Scale up your application
-    - kubectl scale deployment hello-web --replicas=3
-    - kubectl get deployment hello-web
-    - kubectl get pods
+    
+    kubectl scale deployment hello-web --replicas=3
+    kubectl get deployment hello-web
+    kubectl get pods
 
 Step 8: Deploy a new version of your app
-    - docker build -t gcr.io/${PROJECT_ID}/hello-app:v2 .
-    - gcloud docker -- push gcr.io/${PROJECT_ID}/hello-app:v2
-    - kubectl set image deployment/hello-web hello-web=gcr.io/${PROJECT_ID}/hello-app:v2
+    
+    docker build -t gcr.io/${PROJECT_ID}/hello-app:v2 .
+    gcloud docker -- push gcr.io/${PROJECT_ID}/hello-app:v2
+    kubectl set image deployment/hello-web hello-web=gcr.io/${PROJECT_ID}/hello-app:v2
 
 Cleaning up
+    
     kubectl delete service hello-web
     gcloud compute forwarding-rules list
     gcloud container clusters delete hello-cluster
