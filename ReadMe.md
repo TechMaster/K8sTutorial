@@ -295,8 +295,13 @@ args: ["-c", "echo Hello from the debian container > /pod-data/index.html"]
 args: ["-c", "while true; do echo hello >> /pod-data/index.html; sleep 10;done"]
 ```
 
+# Bài 12: Convert Docker-Compose sang K8s
+Sử dụng Kompose.io
 
-# Bài 12: Đóng gói ứng dụng Node.js vào K8s
+# Bài 13: Chọn giải pháp phù hợp cài đặt Kubernetes
+[Tài liệu chọn giải pháp cài đặt K8s](https://kubernetes.io/docs/setup/pick-right-solution/)
+
+# Bài 14: Đóng gói ứng dụng Node.js vào K8s
 [Tham khảo](https://seanmcgary.com/posts/how-to-deploy-a-nodejs-app-to-kubernetes/)
 
 1. Hãy vào thu mục [nodeapp](nodeapp/)
@@ -325,11 +330,57 @@ http://192.168.99.100:32282
 
 $ curl http://192.168.99.100:32282
 ```
-# Bài 13: Convert Docker-Compose sang K8s
-Sử dụng Kompose.io
 
-# Bài 14: Chọn giải pháp phù hợp cài đặt Kubernetes
-[Tài liệu chọn giải pháp cài đặt K8s](https://kubernetes.io/docs/setup/pick-right-solution/)
-# Bài 15: K8s trên Amazon Web ServicesServices
+# Bài 15: Cài đặt K8s trên Google Cloud Platform sử dụng GKE (Google Kubernetes Engine)
+https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app
+Commands:
+
+Step 0: Before you begin
+    - gcloud components install kubectl
+
+Step 1: Build the container image
+    - git clone https://github.com/GoogleCloudPlatform/kubernetes-engine-samples
+    - cd kubernetes-engine-samples/hello-app
+    - export PROJECT_ID="$(gcloud config get-value project -q)"
+
+    # Build Docker App and push to a Container Registry
+    - docker build -t gcr.io/${PROJECT_ID}/hello-app:v1 .
+
+    # Check
+    - docker images
+
+Step 2: Upload the container image
+    - gcloud docker -- push gcr.io/${PROJECT_ID}/hello-app:v1
+
+Step 4: Create a container cluster
+    - gcloud container clusters create hello-cluster --num-nodes=3
+    - gcloud compute instances list
+
+Step 5: Deploy your application
+    - kubectl run hello-web --image=gcr.io/${PROJECT_ID}/hello-app:v1 --port 8080
+    - kubectl get pods
+
+Step 6: Expose your application to the Internet
+    - kubectl expose deployment hello-web --type=LoadBalancer --port 80 --target-port 8080
+
+    # Checking launching service (take awhile to get external IP assigned)
+    kubectl get service
+
+Step 7: Scale up your application
+    - kubectl scale deployment hello-web --replicas=3
+    - kubectl get deployment hello-web
+    - kubectl get pods
+
+Step 8: Deploy a new version of your app
+    - docker build -t gcr.io/${PROJECT_ID}/hello-app:v2 .
+    - gcloud docker -- push gcr.io/${PROJECT_ID}/hello-app:v2
+    - kubectl set image deployment/hello-web hello-web=gcr.io/${PROJECT_ID}/hello-app:v2
+
+Cleaning up
+    kubectl delete service hello-web
+    gcloud compute forwarding-rules list
+    gcloud container clusters delete hello-cluster
+    
+# Bài 16: K8s trên Amazon Web ServicesServices
 1. Tạo tài khoản Amazon Web Service. [Link đây](https://portal.aws.amazon.com/billing/signup#/start)
 2. 
